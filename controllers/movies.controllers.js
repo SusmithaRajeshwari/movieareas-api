@@ -1,6 +1,25 @@
 import Movie from '../models/movies.model.js'
-export const movieIndex =(req,res)=>{
-    res.send("Reading All Movies")
+export const movieIndex =async (req,res)=>{
+    try{
+    const movies = await Movie.find()
+    res.json(movies)
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+}
+
+export const movieDetail =async(req,res)=>{
+    try{
+        const movie = await Movie.findById(req.params.id)
+
+        if(movie==null){
+            return res.status(404).json({message:"cannot find movie"})
+        }else{
+            res.json(movie)
+        }
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
 }
 
 export const movieCreate =async (req,res)=>{
@@ -19,8 +38,18 @@ export const movieCreate =async (req,res)=>{
 
 }
 
-export const movieUpdate=(req,res)=>{
-    res.send("Updating all movies")
+export const movieUpdate=async(req,res)=>{
+   try{
+    const updatedMovie=await Movie.findOneAndUpdate({_id:req.params.id},{
+        title:req.body.title,
+        desc:req.body.desc
+    },{
+        new:true
+    })
+    res.status(200).json(updatedMovie)
+   }catch(err){
+    res.status(400).json({messgae:err.message})
+   }
 }
 
 export const movieDelete =(req,res)=>{
